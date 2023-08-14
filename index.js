@@ -12,18 +12,18 @@ const PORT = p_index !== -1 ? args[p_index + 1] : process.env.PORT || 5000;
 const CLIENT_PORT =
   cp_index !== -1 ? args[cp_index + 1] : process.env.CLIENT_PORT || 3000;
 
-const app = express();
-app.use(
+const ap = express();
+ap.use(
   cors({
     origin: `http://localhost:${CLIENT_PORT}`,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
   })
 );
 
-app.use(express.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+ap.use(express.json());
+ap.use(bodyParser.urlencoded({ extended: true }));
 
-app.listen(PORT, () => {
+ap.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
 });
 
@@ -35,7 +35,7 @@ const db = new sqlite3.Database("softserve.db", (err) => {
 });
 
 // CREATE
-app.post("/products", (req, res) => {
+ap.post("/products", (req, res) => {
   const { name, price } = req.body;
   if (typeof name === undefined || price === undefined) {
     res.status(400).json({ error: "Invalid data format" });
@@ -56,7 +56,7 @@ app.post("/products", (req, res) => {
 });
 
 // READ all
-app.get("/products", (req, res) => {
+ap.get("/products", (req, res) => {
   const sql = `SELECT * FROM products`;
   db.all(sql, [], (err, rows) => {
     if (err) {
@@ -68,7 +68,7 @@ app.get("/products", (req, res) => {
 });
 
 // READ once
-app.get("/products/:id", (req, res) => {
+ap.get("/products/:id", (req, res) => {
   const id = req.params.id;
   const sql = `SELECT * FROM products WHERE id = ? `;
   db.get(sql, id, (err, row) => {
@@ -85,7 +85,7 @@ app.get("/products/:id", (req, res) => {
 });
 
 // UPDATE
-app.patch("/products/:id", (req, res) => {
+ap.patch("/products/:id", (req, res) => {
   const id = req.params.id;
   const selectSqlGet = "SELECT name, price FROM products WHERE id = ?";
   db.get(selectSqlGet, [id], (err, row) => {
@@ -113,7 +113,7 @@ app.patch("/products/:id", (req, res) => {
 });
 
 // DELETE
-app.delete("/products/:id", (req, res) => {
+ap.delete("/products/:id", (req, res) => {
   const id = req.params.id;
   const sql = `DELETE FROM products WHERE id = ?`;
   db.run(sql, id, function (err) {
